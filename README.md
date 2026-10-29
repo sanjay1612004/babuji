@@ -1,65 +1,92 @@
-# Kishorebabu S — Beyond the Interface
+# KISHORE.EXE — The playable portfolio
 
-A responsive, interactive portfolio built with React, TypeScript, Vite, Lucide, and a selectively loaded Three.js scene. All six chapters, education, three project case studies, two experiments, and contact actions are implemented. It needs no application backend or API keys.
+A complete browser-based 3D exploration game for Kishorebabu S, Full-Stack Developer / AI Engineer. React and TypeScript provide the accessible interface; Three.js provides the original procedural world, articulated explorer, third-person camera, and graphics effects. The existing portrait remains in the profile terminal and Quick Portfolio.
 
-## Develop and build
+## Run locally
 
 ```sh
-npm install
+npm ci
 npm run dev
+```
+
+Vite prints the local URL. Build and inspect the production assets with:
+
+```sh
 npm run build
 npm run preview
 ```
 
-Vite prints the local development URL. `npm run build` checks TypeScript and produces a static site in `dist/`. Serve that directory through any static host. Keep the asset directory together with `index.html`.
+The production output is `dist/`, deployable on a static host. There is no application backend, live LLM, messaging integration, or API key requirement.
 
-## Edit content
+## Play
 
-- `src/content.ts`: personal details, experience, project ownership and contributions, technology lists, explanatory AI responses, social links, and live project URLs.
-- `src/main.tsx`: reusable sections and interaction components; illustrative dashboard and playground data.
-- `src/styles.css`: visual tokens, responsive layouts, reduced-motion and print styles.
-- `src/scene.ts`: lazy-loaded Three.js node network. Mobile and reduced-motion visitors receive CSS orbit illustrations. The renderer caps pixel density and pauses offscreen and when the page is hidden; a CSS fallback remains when WebGL is unavailable.
-- `public/assets/kishorebabu.png`: transparent portrait prepared from the image pasted into chat with the built-in image tool. It is a generated cutout based on the reference and may differ slightly from the source. Replace with the original file if available, keeping the same filename, to preserve the original photo exactly.
-- `index.html`: title, description, social metadata, canonical URL, Person structured data, font loading, and a JavaScript-free content fallback.
-- `public/favicon.svg` and `public/social-preview.svg`: vector branding and preview artwork. For platforms that require raster social images, provide a PNG/JPEG and update `og:image`.
+- **WASD / arrow keys:** move relative to the camera, with acceleration and collision boundaries.
+- **Drag the world:** orbit the third-person camera.
+- **Shift:** sprint. **Space:** jump.
+- **E / Enter:** interact with a nearby terminal or portal.
+- **M:** open the fast-travel world map.
+- **J:** mission journal. **Tab while the world canvas has focus:** mission journal. Shift+Tab exits the canvas to the ordinary interface navigation.
+- **Escape:** pause or close the current panel.
+- **R:** reset camera. **H:** hide/restore HUD for screenshots.
+- **Mobile:** pointer joystick, drag camera, jump control, sprint toggle, and large contextual interaction prompt.
 
-Social URLs and project URLs are intentionally empty. Add valid HTTPS links in `src/content.ts` to show them. Empty values never generate dead links. If hosting on another domain, update `profile.canonicalUrl` and the canonical/OG URL fields in `index.html` together.
+The bottom destination dock and world map provide immediate fast travel. Walk toward a project portal and interact to enter its distinct 3D room; interact again with the room’s mission terminal to open the project. The room’s exit portal and “Return to hub world” action bring you back. All six zones and all project case studies are available from the start.
 
-## Interactions
+**Quick Portfolio** is available from the welcome screen, HUD, pause menu, and every terminal. It contains all professional information using the same content source. Switching modes preserves the current game position and progress.
 
-- Six-section navigation with active chapter, mobile disclosure, Escape dismissal, native scrolling, skip link, and scroll progress.
-- Clickable capability nodes and expandable professional experience.
-- Interngo: six functional area selectors with changing illustrative data.
-- FC Labs: four tabs with arrow-key and Home/End navigation.
-- AOKAH: seven explanatory RAG stages and two predefined conversation examples.
-- All three projects expand into complete in-page contribution and technology case studies.
-- Skill category tabs with keyboard navigation and links to related projects.
-- LeetCode concept with category filters and problem selection.
-- Tokenizer concept with real word/punctuation splitting, an explicit illustrative label, character limit, and empty state. It is not an LLM tokenizer.
-- Mail links, email copying, full contact copying, and success/failure feedback.
-- Ctrl/Cmd + K command menu, searchable actions, native dialog focus management, Escape, and backdrop dismissal.
+## Missions
 
-Dashboard values are illustrative sample data. No live project URLs, social profiles, achievements, outcomes, proficiency percentages, or real AI connections are fabricated. FC Labs explicitly credits frontend work in a four-member team.
+1. **Identity terminal:** activate the frontend, backend, and AI holograms.
+2. **Career timeline:** activate both career gates.
+3. **Interngo / Restore the workflow:** connect Attendance → Performance → Resources → Helpdesk → Analytics → Daily report, then trigger a simulated Slack update. Incorrect connections produce helpful feedback; no real message is sent.
+4. **FC Labs / Activate the campus:** use a fictional dataset to identify incomplete workshop participation, the correct trainer, and the top sample score, then unlock the overview.
+5. **AOKAH / Awaken the AI core:** choose a fictional PDF/CSV source, extract and normalize its example text, select relevant context, and trigger a predefined grounded response. No document is uploaded and no LLM is called. This is an educational RAG illustration, not an exact proprietary architecture.
+6. **Skill nexus:** connect an illustrative full-stack or AI technology pipeline. The full skills list is always visible independently of the puzzle.
+7. **Experimental lab:** inspect an illustrative problem tile and enter text in a functional Unicode word/punctuation segmenter. It is explicitly not a model-specific tokenizer. The education archive is available here too.
+8. **Connection portal:** discover the contact terminal. Sending an email is not required to complete this mission.
 
-## Browser verification
+Eight optional mission badges plus the final Universe Explorer achievement represent **visitor game exploration only**, not professional awards, certifications, or career achievements. Puzzles can be revisited or replayed.
 
-The smoke suite checks desktop/mobile/tablet layouts, all project interactions, case studies, keyboard tabs, command dialog focus, clipboard content, portrait loading, mobile navigation, reduced motion, and runtime errors. It starts and stops its own Vite server.
+## Progress, audio, and accessibility
 
-Install the browser used by the included Playwright suite:
+- Progress stays in memory by default. “Remember progress on this device” opts into browser storage under `kishore-exe-v2`. Turning it off removes this game’s saved state; blocked or unavailable storage leaves the game usable for the current session.
+- Restored data is validated and bounded. Resetting local progress requires a second in-interface confirmation. Returning to the hub preserves discoveries.
+- Audio is off on every fresh page load, even with saved preferences. A user gesture enables original Web Audio ambient tones and interaction sounds. There are no audio assets or copyrighted soundtracks.
+- Settings include three graphics presets, reduced motion, particles, higher contrast, optional audio, and opt-in storage.
+- Graphics adapt downward when the measured frame rate is low. Rendering pauses while Quick Portfolio is visible or the document is hidden; a paused world renders only occasional static updates. Pixel density is capped, distant buildings/windows use instancing, and Three.js is loaded separately from the initial interface.
+- Native dialogs include explicit focus wrapping, Escape dismissal, visible close controls, and focus restoration. There are no timed challenges or required precision platforming.
+- If WebGL cannot initialize or its context is lost, tap-to-explore mode preserves every terminal and mission. Quick Portfolio remains available. A basic professional profile and email are also present without JavaScript.
+
+## Editable content and architecture
+
+- `src/content.ts`: verified personal details, professional summary, experience, projects, ownership, contributions, technologies, education, experiments, and optional social/project URLs. Empty URLs never become broken links.
+- `src/game/config.ts`: zones, positions, mission definitions, controls, fictional campus/document datasets, and educational technology pipelines.
+- `src/game/logic.ts`: walkable surfaces, collision clearance, sequence validation, text processing, and saved-progress validation.
+- `src/game/world.ts`: original procedural architecture, six destinations, three project realms, interactable objects, articulated avatar, reusable geometry/materials, instanced skyline, and visual mission state.
+- `src/game/engine.ts`: input, actual movement/jump simulation, distance-based interactions, camera orbit/follow/collision, project transitions, adaptive rendering, and resource cleanup.
+- `src/game/audio.ts`: original synthesized audio with explicit activation.
+- `src/game/missions.tsx`: deterministic mission controls, skill puzzle, education archive, grid explorer, and text segmenter.
+- `src/game/panels.tsx`: accessible sheets, shared verified content, project case studies, map, journal, and Quick Portfolio.
+- `src/main.tsx`: app modes, state, progress, HUD, input routing, joystick, settings, and rendering fallback.
+- `src/styles.css`: responsive visual system, higher contrast, reduced motion, and printable Quick Portfolio.
+
+Add valid HTTPS profiles under `profile.socials` in `src/content.ts`; add actual project links in each project’s `url`. None were supplied, so none are invented. The site’s canonical URL is in the content configuration and `index.html`; update both when changing domain. `public/social-preview.svg` is vector preview artwork; replace its OG reference with a PNG/JPEG for social platforms requiring raster images.
+
+The existing `public/assets/kishorebabu.png` is an AI-prepared transparent cutout based on the previously pasted portrait. It may differ slightly from the original. Replace it with the original file at the same path if exact preservation is desired. No new portrait was generated for this redesign.
+
+## Verification
 
 ```sh
 npx playwright install chromium
 npm test
 ```
 
-For an existing Playwright installation, set `PLAYWRIGHT_MODULE` to its absolute `index.mjs` path. The script uses the standard Playwright browser installation unless `BROWSER_EXECUTABLE` is set. Screenshots are written into ignored `test-results/`.
+`npm run test:logic` checks walkable ground/bridges, collision clearance, correct and incorrect mission sequences, whitespace processing, Unicode segmentation (including combining marks), and defensive progress restoration.
 
-## Sites publication
+`node tests/browser.mjs` starts and stops a local Vite server and checks actual keyboard movement, sprint, jump, mouse camera orbit/reset, pause, dialog focus, fast travel, all three 3D project-room entries, all missions and invalid puzzle input, case study accuracy, clipboard actions, eight badges, mode switching, sound controls, opt-in persistence, five viewport sizes, pointer joystick input, reduced motion, WebGL failure fallback, runtime exceptions, and missing local assets. It writes screenshots into ignored `test-results/`. Set `BROWSER_EXECUTABLE` to use a specific Chromium binary.
 
-`.openai/hosting.json` stores the private Site identity and static output directory. Source is synchronized through the Sites workflow helper; the deployment archive is built from that exact source commit. Do not create a second Site or replace its ID. Publishing preserves the Site audience. The owner can change access through Sites when ready to share publicly.
+Headless browser checks verify functionality and layout, not a guaranteed frame-rate target on physical mobile hardware. No Lighthouse score or universal FPS claim is made.
 
-## Portrait preparation
+## Sites hosting
 
-Mode: built-in imagegen, background-extraction edit. Prompt: “Export the user's pasted portrait as a clean web asset with actual transparent background. Preserve the person's exact face, identity, glasses, hair, beard, skin tone, pose, light blue shirt, crop and existing slightly illustrated photographic appearance as closely as possible. Change only any black background to transparency. Do not redesign, beautify, reimagine, recolor, change clothing or add anything. Maintain the waist-up portrait composition. No text, no border, no decorative graphics.”
-
-Saved asset: `public/assets/kishorebabu.png`.
+The existing Site identity is preserved in `.openai/hosting.json`, with `dist/` as the static directory. The Sites workflow helper builds, commits, pushes, and packages that exact source state. Publication preserves the current audience. Do not create a new Site or replace its project ID to update this application.

@@ -6,7 +6,15 @@ export const profile = {
   portrait: '/assets/kishorebabu.png',
   canonicalUrl: 'https://kishorebabu-engineering-portfolio.peachycrow19.chatgpt.site',
   socials: { GitHub: '', LinkedIn: '', LeetCode: '' },
+  summary: 'Full-Stack Developer with experience building web applications, backend services, and AI-powered workflows. Experienced in developing applications end to end using React, Node.js, Fastify, and PostgreSQL.',
+  background: 'I’ve worked on intern management systems, college administration platforms, and retrieval-augmented conversational AI using Python, LangChain, and large language models.',
 };
+
+export const education = { degree: 'B.Tech — Artificial Intelligence and Machine Learning', institution: 'Hindusthan College of Engineering and Technology', location: 'Coimbatore, Tamil Nadu, India', graduation: 2026 };
+export const personalExperiments = [
+  { name: 'LeetCode Grid Viewer', description: 'A small application for exploring LeetCode problems in a grid-based interface. The game’s lab contains an illustrative, interactive problem explorer.' },
+  { name: 'Tokenizer', description: 'A small application for exploring text tokenization. The game’s lab includes a functional, illustrative word and punctuation segmenter.' },
+];
 
 export const chapters = [
   { id: 'about', label: 'The developer', short: 'About' },
@@ -57,6 +65,11 @@ export const projects = [
     workflow: ['Documents', 'Extraction', 'Cleaning', 'Chunking', 'Retrieval', 'LLM', 'Response'], url: '',
   },
 ];
+
+export function projectNamesForTechnology(technology: string): string[] {
+  const normalized = technology === 'LLM' || technology === 'Large Language Models' ? 'LLMs' : technology === 'Retrieval-Augmented Generation' ? 'RAG' : technology;
+  return projects.filter(project => project.stack.includes(normalized)).map(project => project.name);
+}
 
 export const capabilities = [
   { name: 'Frontend', icon: '01', description: 'The interface between people and possibility.', technologies: ['React', 'Astro', 'Tailwind CSS', 'TanStack Query', 'React Compiler', 'Axios'], projects: ['Interngo', 'FC Labs'] },
