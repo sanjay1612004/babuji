@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { zones, type Progress } from './config';
+import { zones, zoneLabels, type Progress } from './config';
 import type { Obstacle } from './logic';
 
 export type Interactable = { id: string; name: string; position: THREE.Vector3; mesh: THREE.Object3D };
@@ -20,7 +20,7 @@ export function buildWorld(scene: THREE.Scene) {
   const textures: THREE.Texture[] = [];
   function material(color: string, glow = false, opacity = 1) {
     const key = `${color}-${glow}-${opacity}`;
-    if (!materials.has(key)) materials.set(key, glow ? new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity, depthWrite: opacity === 1 }) : new THREE.MeshStandardMaterial({ color, roughness: .55, metalness: .25 }));
+    if (!materials.has(key)) materials.set(key, glow ? new THREE.MeshBasicMaterial({ color, transparent: opacity < 1, opacity, depthWrite: opacity === 1 }) : new THREE.MeshStandardMaterial({ color, roughness: .32, metalness: .45 }));
     return materials.get(key)!;
   }
   function box(parent: THREE.Object3D, x: number, y: number, z: number, width: number, height: number, depth: number, color: string, glow = false, opacity = 1) {
@@ -77,12 +77,15 @@ export function buildWorld(scene: THREE.Scene) {
   cylinder(main, 0, .12, -2, 1.8, .24, '#20364c');
   const hubCore = new THREE.Mesh(new THREE.IcosahedronGeometry(.75, 0), material('#65e8f2', true, .7)); hubCore.position.set(0, 2.5, -2); main.add(hubCore); animated.push({ object: hubCore, kind: 'rotate', base: 2.5, speed: .3 });
   ring(main, 0, 1.9, -2, 1.4, palette.cyan, true); label(main, 'KISHORE.EXE / CENTRAL HUB', 0, 5, -2, '#98e5ef', 1.1);
-  zones.forEach(zone => {
+  zones.forEach((zone, zoneIndex) => {
     const [x, z] = zone.position; platform(main, x, z, 8.3, zone.color);
     const distance = Math.hypot(x, z); const angle = Math.atan2(x, z);
     const bridgeCenter = (distance + 4.5) / 2; const bridgeLength = Math.max(1, distance - 17.5); const bridgeX = x / distance * bridgeCenter, bridgeZ = z / distance * bridgeCenter; const bridge = box(main, bridgeX, -.32, bridgeZ, 5.2, .6, bridgeLength, '#21394e'); bridge.rotation.y = angle;
     [-1, 1].forEach(side => { const railX = bridgeX + Math.cos(angle) * 2.4 * side; const railZ = bridgeZ - Math.sin(angle) * 2.4 * side; const rail = box(main, railX, .06, railZ, .035, .04, bridgeLength, zone.color, true, .7); rail.rotation.y = angle; });
-    label(main, `${zone.symbol} / ${zone.name}`, x, 7, z - 2, zone.color, 1.1);
+    label(main, `${zone.symbol} / ${zoneLabels[zoneIndex]}`, x, 7, z - 2, zone.color, 1.55);
+    label(main, zone.subtitle, x, 6, z - 2, '#F7FBFF', .85);
+    const entry = ring(main, x, 3, z + 4, 2.8, zone.color, false, .065);
+    interactables.push({ id: zone.id, name: zoneLabels[zoneIndex], position: new THREE.Vector3(x, 0, z + 4), mesh: entry });
     if (zone.id === 'identity') {
       terminal(main, 'identity', 'Developer profile', x, z + 1, zone.color);
       const bust = new THREE.Group(); main.add(bust); cylinder(bust, x, .15, z - 3, 1.7, .3, '#1d3449');
@@ -111,6 +114,18 @@ export function buildWorld(scene: THREE.Scene) {
     // Perimeter architecture keeps navigable paths legible.
     for (let i = 0; i < 3; i++) { const a = Math.atan2(z, x) + (i - 1) * .38; const px = x + Math.cos(a) * 6.7, pz = z + Math.sin(a) * 6.7; const h = 2.7 + i * 1.6; box(main, px, h / 2, pz, 1.4, h, 1.4, i % 2 ? '#1b3047' : '#15283d'); box(main, px, h / 2, pz + .72, .055, h * .8, .04, zone.color, true, .8); ring(main, px, h + .08, pz, .8, zone.color, true, .018); obstacles.push({ x: px, z: pz, width: 1.4, depth: 1.4, height: h }); }
   });
+  const routes = new Map<string, THREE.Group>();
+  zones.forEach(zone => {
+    const route = new THREE.Group(); route.visible = false; main.add(route); routes.set(zone.id, route);
+    const [x, z] = zone.position, distance = Math.hypot(x, z), angle = Math.atan2(x, z);
+    const line = box(route, x / 2, .085, z / 2, .18, .025, distance - 3, zone.color, true); line.rotation.y = angle;
+    for (let d = 4; d < distance - 3; d += 2.2) {
+      const marker = new THREE.Group(); marker.position.set(x / distance * d, .11, z / distance * d); marker.rotation.y = angle; route.add(marker);
+      [-1, 1].forEach(side => { const arm = box(marker, side * .22, 0, -.2, .06, .025, .65, zone.color, true); arm.rotation.y = side * -.75; });
+    }
+    label(route, 'FOLLOW THE LIGHT / ' + zone.name, x / distance * 9, 1, z / distance * 9, zone.color, .9);
+  });
+  function destination(id: string | null) { routes.forEach((route, key) => { route.visible = key === id; }); }
   // Instanced distant skyline: visual depth without dozens of unique materials.
   const skyline = new THREE.InstancedMesh(boxGeometry, material('#1b2e45'), 70); const matrix = new THREE.Matrix4();
   const skylineWindows = new THREE.InstancedMesh(boxGeometry, material('#70a4ba', true), 560);
@@ -183,5 +198,5 @@ export function buildWorld(scene: THREE.Scene) {
     scene.traverse(object => { const mesh = object as THREE.Mesh; if (mesh.geometry) geometries.add(mesh.geometry); if (mesh.material) (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(m => mats.add(m)); });
     geometries.forEach(g => g.dispose()); mats.forEach(m => m.dispose()); textures.forEach(t => t.dispose());
   }
-  return { main, background, avatar, interactables, obstacles, realms, update, sync, dispose };
+  return { main, background, avatar, interactables, obstacles, realms, update, sync, destination, dispose };
 }

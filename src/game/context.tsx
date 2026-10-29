@@ -8,6 +8,8 @@ export type GameContextValue = {
   copy: (details?: boolean) => void;
   quick: () => void;
   restart: () => void;
+  navigate: (id: string) => void;
+  enterProject: (id: string) => void;
 };
 export const GameContext = createContext<GameContextValue | null>(null);
 export function useGame() { const value = useContext(GameContext); if (!value) throw new Error('Game provider unavailable'); return value; }

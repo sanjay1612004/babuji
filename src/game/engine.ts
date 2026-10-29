@@ -9,16 +9,16 @@ import { zones, type GameSettings, type Progress } from './config';
 
 export type JoystickInput = { x: number; y: number; jump: boolean; sprint: boolean };
 export type Telemetry = { x: number; y: number; z: number; yaw: number; zone: string; near: { id: string; name: string } | null; realm: RealmId | null; speed: number };
-export type EngineApi = { teleport: (id: string) => void; enterRealm: (id: RealmId) => void; exitRealm: () => void; resetCamera: () => void; settings: (value: GameSettings) => void; progress: (value: Progress) => void; dispose: () => void };
+export type EngineApi = { destination: (id: string | null) => void; teleport: (id: string) => void; enterRealm: (id: RealmId) => void; exitRealm: () => void; resetCamera: () => void; settings: (value: GameSettings) => void; progress: (value: Progress) => void; dispose: () => void };
 export type EngineOptions = { mode: () => 'welcome' | 'play' | 'paused' | 'quick'; input: JoystickInput; settings: GameSettings; telemetry: (value: Telemetry) => void; interact: (id: string) => void; failure: () => void };
 
 export function createEngine(container: HTMLElement, options: EngineOptions): EngineApi {
   const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: false, powerPreference: 'high-performance', preserveDrawingBuffer: false });
-  renderer.setClearColor('#070c18'); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.25;
+  renderer.setClearColor('#091026'); renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.25;
   renderer.domElement.setAttribute('aria-label', 'Explorable 3D Codeverse. Use WASD or arrows to move, drag to orbit, E to interact. All content is also available in Quick Portfolio.');
   renderer.domElement.setAttribute('role', 'img'); renderer.domElement.style.touchAction = 'none'; container.appendChild(renderer.domElement);
   renderer.domElement.tabIndex = 0;
-  const scene = new THREE.Scene(); scene.background = new THREE.Color('#070c18'); scene.fog = new THREE.FogExp2('#070c18', .009);
+  const scene = new THREE.Scene(); scene.background = new THREE.Color('#091026'); scene.fog = new THREE.FogExp2('#091026', .006);
   const camera = new THREE.PerspectiveCamera(48, 1, .1, 240);
   scene.add(new THREE.HemisphereLight('#b4dafa', '#24334a', 2.3));
   const keyLight = new THREE.DirectionalLight('#acd9ff', 2.6); keyLight.position.set(20, 35, 10); scene.add(keyLight);
@@ -69,7 +69,7 @@ export function createEngine(container: HTMLElement, options: EngineOptions): En
     if (dragDistance > 6 || options.mode() !== 'play') return;
     const rect = canvas.getBoundingClientRect(); const pointer = new THREE.Vector2((e.clientX - rect.left) / rect.width * 2 - 1, -(e.clientY - rect.top) / rect.height * 2 + 1); const raycaster = new THREE.Raycaster(); raycaster.setFromCamera(pointer, camera);
     const targets = activeList(); const hits = raycaster.intersectObjects(targets.map(t => t.mesh), true);
-    if (hits[0]) { const target = targets.find(t => t.mesh === hits[0].object || t.mesh.children.includes(hits[0].object)); if (target && Math.hypot(player.x - target.position.x, player.z - target.position.z) < 3.6) options.interact(target.id); }
+    if (hits[0]) { const target = targets.find(t => t.mesh === hits[0].object || t.mesh.children.includes(hits[0].object)); if (target) options.interact(target.id); }
   }
   canvas.addEventListener('pointerdown', pointerDown); canvas.addEventListener('pointermove', pointerMove); canvas.addEventListener('pointerup', pointerUp); canvas.addEventListener('pointercancel', pointerUp);
   const contextLost = (e: Event) => { e.preventDefault(); options.failure(); }; canvas.addEventListener('webglcontextlost', contextLost);
@@ -105,7 +105,7 @@ export function createEngine(container: HTMLElement, options: EngineOptions): En
       camera.position.set(Math.sin(angle) * 67, 43, Math.cos(angle) * 67); camera.lookAt(-8, -.5, -3); world.avatar.position.copy(player);
     } else {
       followTarget.set(player.x, player.y + 1.2, player.z);
-      const distance = container.clientWidth < 700 ? 11 : 10;
+      const distance = container.clientWidth < 700 ? 19 : 21;
       idealCamera.set(player.x + Math.sin(yaw) * distance, player.y + 3 + Math.sin(pitch) * distance * .9, player.z + Math.cos(yaw) * distance);
       if (!realm) {
         rayDirection.copy(idealCamera).sub(followTarget); const originalLength = rayDirection.length(); ray.set(followTarget, rayDirection.normalize()); let closest = originalLength;
@@ -132,6 +132,7 @@ export function createEngine(container: HTMLElement, options: EngineOptions): En
     player.set(0, 0, 6); clearInput(); yaw = 0; pitch = .53; cinematic = settings.reducedMotion ? 0 : .6; telemetry();
   }
   return {
+    destination: id => world.destination(id),
     teleport(id) {
       if (realm) setRealm(null);
       const zone = zones.find(z => z.id === id);
